@@ -28,16 +28,15 @@ function c94977269.initial_effect(c)
 	--disable summon
 	local e4=Effect.CreateEffect(c)
 	e4:SetType(EFFECT_TYPE_FIELD)
-	e4:SetCode(EFFECT_CANNOT_SPECIAL_SUMMON)
+	e4:SetCode(EFFECT_SPSUMMON_COUNT_LIMIT)
 	e4:SetRange(LOCATION_MZONE)
 	e4:SetProperty(EFFECT_FLAG_PLAYER_TARGET)
 	e4:SetTargetRange(1,1)
-	e4:SetTarget(c94977269.splimit2)
+	e4:SetValue(c94977269.spval)
 	c:RegisterEffect(e4)
 	local e5=Effect.CreateEffect(c)
 	e5:SetType(EFFECT_TYPE_FIELD+EFFECT_TYPE_CONTINUOUS)
 	e5:SetCode(EVENT_SPSUMMON_SUCCESS)
-	e5:SetProperty(EFFECT_FLAG_CANNOT_DISABLE)
 	e5:SetRange(LOCATION_MZONE)
 	e5:SetOperation(c94977269.checkop)
 	c:RegisterEffect(e5)
@@ -57,7 +56,7 @@ function c94977269.ffilter1(c)
 	return c:IsSetCard(0x9d)
 end
 function c94977269.ffilter2(c)
-	return c:IsAttribute(ATTRIBUTE_DARK) or c:GetFlagEffect(4904633)~=0
+	return c:IsAttribute(ATTRIBUTE_DARK) or c:IsHasEffect(4904633)
 end
 function c94977269.exfilter(c,g)
 	return c:IsFaceup() and c:IsCanBeFusionMaterial() and not g:IsContains(c)
@@ -164,8 +163,8 @@ end
 function c94977269.splimit(e,se,sp,st)
 	return bit.band(st,SUMMON_TYPE_FUSION)==SUMMON_TYPE_FUSION
 end
-function c94977269.splimit2(e,c,sump,sumtype,sumpos,targetp)
-	return e:GetHandler():GetFlagEffect(94977269+sump)>0
+function c94977269.spval(e,se,sp)
+	return 1-e:GetHandler():GetFlagEffect(94977269+sp)
 end
 function c94977269.checkop(e,tp,eg,ep,ev,re,r,rp)
 	local c=e:GetHandler()
@@ -177,8 +176,8 @@ function c94977269.checkop(e,tp,eg,ep,ev,re,r,rp)
 		if tc:GetSummonPlayer()==0 then p1=true else p2=true end
 		tc=eg:GetNext()
 	end
-	if p1 then c:RegisterFlagEffect(94977269,RESET_PHASE+PHASE_END,0,1) end
-	if p2 then c:RegisterFlagEffect(94977270,RESET_PHASE+PHASE_END,0,1) end
+	if p1 then c:RegisterFlagEffect(94977269,RESET_EVENT+0x1fe0000+RESET_PHASE+PHASE_END,0,1) end
+	if p2 then c:RegisterFlagEffect(94977270,RESET_EVENT+0x1fe0000+RESET_PHASE+PHASE_END,0,1) end
 end
 function c94977269.indval(e,re,tp)
 	return tp~=e:GetHandlerPlayer()

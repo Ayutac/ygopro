@@ -383,10 +383,10 @@ public:
 
 	int32 get_release_list(uint8 playerid, card_set* release_list, card_set* ex_list, int32 use_con, int32 use_hand, int32 fun, int32 exarg, card* exp); // ?
 	int32 check_release_list(uint8 playerid, int32 count, int32 use_con, int32 use_hand, int32 fun, int32 exarg, card* exp); // ?
-	int32 get_summon_release_list(card* target, card_set* release_list, card_set* ex_list, card_set* ex_list_sum); // ?
-	int32 get_summon_count_limit(uint8 playerid); // returns the number of (normal?) summons currently allowed
+	int32 get_summon_release_list(card* target, card_set* release_list, card_set* ex_list, card_set* ex_list_sum, group* mg = 0); // ?
+	int32 get_summon_count_limit(uint8 playerid); // saves possible ritual material into material
 	int32 get_draw_count(uint8 playerid); // ?
-	void get_ritual_material(uint8 playerid, effect* peffect, card_set* material); // saves possible ritual material into material
+	void get_ritual_material(uint8 playerid, effect* peffect, card_set* material); // returns the number of (normal?) summons currently allowed
 	void ritual_release(card_set* material); // (ritual) tributes cards
 	void get_xyz_material(card* scard, int32 findex, int32 maxc); // saves possible xyz material into core.xmaterial_lst
 	void get_overlay_group(uint8 self, uint8 s, uint8 o, card_set* pset); // gets all xyz material on the field and stores it into pset
@@ -423,6 +423,9 @@ public:
 	int32 is_player_can_spsummon(effect* peffect, uint32 sumtype, uint8 sumpos, uint8 playerid, uint8 toplayer, card* pcard);
 	int32 is_player_can_flipsummon(uint8 playerid, card* pcard);
 	int32 is_player_can_spsummon_monster(uint8 playerid, uint8 toplayer, uint8 sumpos, card_data* pdata);
+	int32 is_player_can_summon_count(uint8 playerid, uint32 count);
+	int32 is_player_can_spsummon_count(uint8 playerid, uint32 count);
+	int32 is_player_can_flipsummon_count(uint8 playerid, uint32 count);
 	int32 is_player_can_release(uint8 playerid, card* pcard);
 	int32 is_player_can_place_counter(uint8 playerid, card* pcard, uint16 countertype, uint16 count);
 	int32 is_player_can_remove_counter(uint8 playerid, card* pcard, uint8 s, uint8 o, uint16 countertype, uint16 count, uint32 reason);

@@ -11,10 +11,9 @@ function c4239451.initial_effect(c)
 	local e2=Effect.CreateEffect(c)
 	e2:SetDescription(aux.Stringid(4239451,0))
 	e2:SetType(EFFECT_TYPE_IGNITION)
-	e2:SetRange(LOCATION_SZONE)
+	e2:SetRange(LOCATION_PZONE)
 	e2:SetProperty(EFFECT_FLAG_CARD_TARGET)
 	e2:SetCountLimit(1)
-	e2:SetCondition(c4239451.adcon)
 	e2:SetTarget(c4239451.adtg1)
 	e2:SetOperation(c4239451.adop1)
 	c:RegisterEffect(e2)
@@ -31,9 +30,6 @@ function c4239451.initial_effect(c)
 	e3:SetOperation(c4239451.adop2)
 	c:RegisterEffect(e3)
 end
-function c4239451.adcon(e,tp,eg,ep,ev,re,r,rp)
-	return e:GetHandler():GetSequence()==6 or e:GetHandler():GetSequence()==7
-end
 function c4239451.filter(c)
 	return c:IsFaceup()
 end
@@ -44,6 +40,7 @@ function c4239451.adtg1(e,tp,eg,ep,ev,re,r,rp,chk,chkc)
 	Duel.SelectTarget(tp,c4239451.filter,tp,LOCATION_MZONE,LOCATION_MZONE,1,1,nil)
 end
 function c4239451.adop1(e,tp,eg,ep,ev,re,r,rp)
+	if not e:GetHandler():IsRelateToEffect(e) then return end
 	local tc=Duel.GetFirstTarget()
 	if tc:IsRelateToEffect(e) and tc:IsFaceup() then
 		local atk=tc:GetAttack()
