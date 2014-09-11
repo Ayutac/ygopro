@@ -1,5 +1,8 @@
 /*
  * field.h
+ * Contains the necessary structures to simulate a duel field,
+ * and constant related to duel fields. If the game would be changed to more players, 
+ * this part must be changed too.
  *
  *  Created on: 2010-5-8
  *      Author: Argon
@@ -26,6 +29,9 @@ class duel;
 class group;
 class effect;
 
+/*
+ * Some event ?
+ */
 struct tevent {
 	card* trigger_card;
 	group* event_cards;
@@ -37,14 +43,22 @@ struct tevent {
 	uint8 reason_player;
 	bool operator< (const tevent& v) const;
 };
+
+/*
+ * Some target ?
+ */
 struct optarget {
 	group* op_cards;
 	uint8 op_count;
 	uint8 op_player;
 	int32 op_param;
 };
+
+/*
+ * Structure for a chain ?
+ */
 struct chain {
-	typedef std::map<uint32, optarget > opmap;
+	typedef std::map<uint32, optarget > opmap; // ?
 	uint16 chain_id;
 	uint8 chain_count;
 	uint8 triggering_player;
@@ -64,29 +78,36 @@ struct chain {
 	static bool chain_operation_sort(chain c1, chain c2);
 };
 
+/*
+ * Structure for information about the player.
+ */
 struct player_info {
-	typedef std::vector<card*> card_vector;
-	int32 lp;
-	int32 start_count;
-	int32 draw_count;
-	uint32 used_location;
-	uint32 disabled_location;
-	card_vector list_mzone;
-	card_vector list_szone;
-	card_vector list_main;
-	card_vector list_grave;
-	card_vector list_hand;
-	card_vector list_remove;
-	card_vector list_extra;
-	card_vector tag_list_main;
-	card_vector tag_list_hand;
-	card_vector tag_list_extra;
+	typedef std::vector<card*> card_vector; // a list of cards
+	int32 lp; // the life points
+	int32 start_count; // number of cards drawn at the beginning of a duel
+	int32 draw_count; // number of cards drawn in the Draw Phase
+	uint32 used_location; // all locations on the field used ? Then the maximum of locations would be 32, currently 13 are used
+	uint32 disabled_location; // locations disabled
+	card_vector list_mzone; // list of cards in the monster card zone
+	card_vector list_szone; // list of cards in the spell/trap card zone
+	card_vector list_main; // list of cards in the main deck
+	card_vector list_grave; // list of card in the grave yard
+	card_vector list_hand; // list of cards in the hand
+	card_vector list_remove; // list of cards removed from play
+	card_vector list_extra; // list of cards in the extra deck
+	card_vector tag_list_main; // ?
+	card_vector tag_list_hand; // ?
+	card_vector tag_list_extra; // ?
 };
+
+/*
+ * Structure for field effect.
+ */
 struct field_effect {
-	typedef std::multimap<uint32, effect*> effect_container;
-	typedef std::map<effect*, effect_container::iterator > effect_indexer;
-	typedef std::map<effect*, effect*> oath_effects;
-	typedef std::set<effect*> effect_collection;
+	typedef std::multimap<uint32, effect*> effect_container; // ?
+	typedef std::map<effect*, effect_container::iterator > effect_indexer; // ?
+	typedef std::map<effect*, effect*> oath_effects; // what ?
+	typedef std::set<effect*> effect_collection; // a list of effects
 
 	effect_container aura_effect;
 	effect_container ignition_effect;
@@ -105,252 +126,276 @@ struct field_effect {
 	std::list<card*> disable_check_list;
 	std::set<card*, card_sort> disable_check_set;
 };
+
+/*
+ * Structure for information about the field.
+ */
 struct field_info {
-	int32 field_id;
-	int16 copy_id;
-	int16 turn_id;
-	int16 card_id;
-	uint8 phase;
-	uint8 turn_player;
-	uint8 priorities[2];
+	int32 field_id; // the id of the field ? Are there more than 1
+	int16 copy_id; // ?
+	int16 turn_id; // the number of turns
+	int16 card_id; // ?
+	uint8 phase; // the phase of the current turn
+	uint8 turn_player; // the turn of which player
+	uint8 priorities[2]; // ?
 };
+
+/*
+ * Structure for life point costs.
+ */
 struct lpcost {
 	int32 count;
 	int32 amount;
 	int32 lpstack[8];
 };
+
+/*
+ * Structure for something like a step in the computation ?
+ */
 struct processor_unit {
-	uint16 type;
-	uint16 step;
-	effect* peffect;
-	group* ptarget;
-	ptr arg1;
-	ptr arg2;
+	uint16 type; // type of the unit, see 
+	uint16 step; // the step of the execution (of this unit or in the overall process?)
+	effect* peffect; // the effect to be done
+	group* ptarget; // the target for that
+	ptr arg1; // ?
+	ptr arg2; // ?
 };
+
+/*
+ * Structure for ?
+ */
 union return_value {
 	int8 bvalue[64];
 	int16 svalue[32];
 	int32 ivalue[16];
 	int64 lvalue[8];
 };
-struct processor {
-	typedef std::vector<effect*> effect_vector;
-	typedef std::vector<card*> card_vector;
-	typedef std::vector<uint32> option_vector;
-	typedef std::list<card*> card_list;
-	typedef std::list<tevent> event_list;
-	typedef std::list<chain> chain_list;
-	typedef std::map<effect*, chain> instant_f_list;
-	typedef std::vector<chain> chain_array;
-	typedef std::list<processor_unit> processor_list;
-	typedef std::set<card*, card_sort> card_set;
-	typedef std::set<effect*> effect_collection;
-	typedef std::set<std::pair<effect*, tevent> > delayed_effect_collection;
 
-	processor_list units;
-	processor_list subunits;
-	processor_unit reserved;
-	card_vector select_cards;
-	card_vector summonable_cards;
-	card_vector spsummonable_cards;
-	card_vector repositionable_cards;
-	card_vector msetable_cards;
-	card_vector ssetable_cards;
-	card_vector attackable_cards;
-	effect_vector select_effects;
-	option_vector select_options;
-	event_list point_event;
-	event_list instant_event;
-	event_list queue_event;
-	event_list used_event;
-	event_list single_event;
-	event_list solving_event;
-	event_list sub_solving_event;
-	chain_array select_chains;
-	chain_array current_chain;
-	chain_list tpchain;
-	chain_list ntpchain;
-	chain_list continuous_chain;
-	chain_list desrep_chain;
-	chain_list new_fchain;
-	chain_list new_fchain_s;
-	chain_list new_ochain;
-	chain_list new_ochain_s;
-	chain_list new_fchain_b;
-	chain_list new_ochain_b;
-	chain_list new_ochain_h;
-	chain_list new_chains;
-	delayed_effect_collection delayed_quick_tmp;
-	delayed_effect_collection delayed_quick_break;
-	delayed_effect_collection delayed_quick;
-	instant_f_list quick_f_chain;
-	card_set leave_confirmed;
-	card_set special_summoning;
-	card_set equiping_cards;
-	card_set control_adjust_set[2];
-	card_set release_cards;
-	card_set release_cards_ex;
-	card_set release_cards_ex_sum;
-	card_set destroy_set;
-	card_set battle_destroy_rep;
-	card_set fusion_materials;
-	card_set synchro_materials;
-	card_set operated_set;
-	card_set discarded_set;
-	card_set destroy_canceled;
-	card_set delayed_enable_set;
-	card_set summoned_cards_pt[2];
-	card_set normalsummoned_cards_pt[2];
-	card_set spsummoned_cards_pt[2];
-	card_set flipsummoned_cards_pt[2];
-	effect_set_v disfield_effects;
-	effect_set_v extraz_effects;
-	effect_set_v extraz_effects_e;
-	std::set<effect*> reseted_effects;
-	effect_vector delayed_tp;
-	effect_vector delayed_ntp;
-	event_list delayed_tev;
-	event_list delayed_ntev;
-	std::unordered_map<card*, uint32> readjust_map;
-	std::unordered_set<card*> unique_cards[2];
-	std::unordered_map<uint32, uint32> effect_count_code;
-	std::unordered_map<uint32, uint32> effect_count_code_duel;
-	std::multimap<int32, card*, std::greater<int32> > xmaterial_lst;
-	ptr temp_var[4];
-	uint32 global_flag;
-	uint16 pre_field[2];
-	uint16 opp_mzone[5];
-	int32 chain_limit;
-	uint8 chain_limp;
-	int32 chain_limit_p;
-	uint8 chain_limp_p;
-	uint8 chain_solving;
-	uint8 win_player;
-	uint8 win_reason;
-	uint8 re_adjust;
-	effect* reason_effect;
-	uint8 reason_player;
-	card* summoning_card;
-	uint8 summon_depth;
-	card* attacker;
-	card* sub_attacker;
-	card* attack_target;
-	card* sub_attack_target;
-	card* limit_tuner;
-	group* limit_xyz;
-	group* limit_syn;
-	uint8 attack_cancelable;
-	uint8 effect_damage_step;
-	int32 battle_damage[2];
-	int32 summon_count[2];
-	uint8 extra_summon[2];
-	int32 spe_effect[2];
-	int32 duel_options;
-	uint32 copy_reset;
-	uint8 copy_reset_count;
-	uint8 dice_result[5];
-	uint8 coin_result[5];
-	uint8 to_bp;
-	uint8 to_m2;
-	uint8 to_ep;
-	uint8 skip_m2;
-	uint8 chain_attack;
-	card* chain_attack_target;
-	uint8 selfdes_disabled;
-	uint8 overdraw[2];
-	int32 check_level;
-	uint8 shuffle_check_disabled;
-	uint8 shuffle_hand_check[2];
-	uint8 shuffle_deck_check[2];
-	uint8 deck_reversed;
-	uint8 remove_brainwashing;
-	uint8 flip_delayed;
-	uint8 damage_calculated;
-	uint8 summon_state[2];
-	uint8 normalsummon_state[2];
-	uint8 flipsummon_state[2];
-	uint8 spsummon_state[2];
-	uint8 attack_state[2];
-	uint8 phase_action;
-	uint32 hint_timing[2];
+/*
+ * Structure for information ?
+ */
+struct processor {
+	typedef std::vector<effect*> effect_vector; // list of effects
+	typedef std::vector<card*> card_vector; // list of cards
+	typedef std::vector<uint32> option_vector; // list of options ?
+	typedef std::list<card*> card_list; // another type of list of cards
+	typedef std::list<tevent> event_list; // a list of events ?
+	typedef std::list<chain> chain_list; // a list of chains ?
+	typedef std::map<effect*, chain> instant_f_list; // ?
+	typedef std::vector<chain> chain_array; // another type of list of changes ?
+	typedef std::list<processor_unit> processor_list; // a list of processor units ?
+	typedef std::set<card*, card_sort> card_set; // a list of cards with a comparator
+	typedef std::set<effect*> effect_collection; // a list of effects (?)
+	typedef std::set<std::pair<effect*, tevent> > delayed_effect_collection; // ?
+
+	processor_list units; // units I guess
+	processor_list subunits; // subroutines ?
+	processor_unit reserved; // ?
+	card_vector select_cards; // a selection of cards ?
+	card_vector summonable_cards; // saves summonable cards
+	card_vector spsummonable_cards; // saves special summonable cards
+	card_vector repositionable_cards; // ?
+	card_vector msetable_cards; // saves cards that can be set in the monster zone
+	card_vector ssetable_cards; // saves cards that can be set in the s/t zone
+	card_vector attackable_cards; // not sure if cards that can attack or can be attacked ?
+	effect_vector select_effects; // ?
+	option_vector select_options; // ?
+	event_list point_event; // ?
+	event_list instant_event; // ?
+	event_list queue_event; // events to come next?
+	event_list used_event; // solved events? 
+	event_list single_event; // ?
+	event_list solving_event; // events currently being solved ?
+	event_list sub_solving_event; // in subqueue ?
+	chain_array select_chains; // ?
+	chain_array current_chain; // the currently solving chain ?
+	chain_list tpchain; // ?
+	chain_list ntpchain; // ?
+	chain_list continuous_chain; // ?
+	chain_list desrep_chain; // ?
+	chain_list new_fchain; // ?
+	chain_list new_fchain_s; // ?
+	chain_list new_ochain; // ?
+	chain_list new_ochain_s; // ?
+	chain_list new_fchain_b; // ?
+	chain_list new_ochain_b; // ?
+	chain_list new_ochain_h; // ?
+	chain_list new_chains; // new chains to come?
+	delayed_effect_collection delayed_quick_tmp; // ?
+	delayed_effect_collection delayed_quick_break; // ?
+	delayed_effect_collection delayed_quick; // ?
+	instant_f_list quick_f_chain; // ?
+	card_set leave_confirmed; // ?
+	card_set special_summoning; // a list of special summoned cards on the field ?
+	card_set equiping_cards; // a list of cards equipping other cards on the field ?
+	card_set control_adjust_set[2]; // ?
+	card_set release_cards; // ?
+	card_set release_cards_ex; // ?
+	card_set release_cards_ex_sum; // ?
+	card_set destroy_set; // ?
+	card_set battle_destroy_rep; // ?
+	card_set fusion_materials; // a list of cards on the field that can be used for fusions ?
+	card_set synchro_materials; // a list of cards on the field that can be used for synchro summons ?
+	card_set operated_set; // ?
+	card_set discarded_set; // a list of all discarded cards ?
+	card_set destroy_canceled; // a list of ?
+	card_set delayed_enable_set; // ?
+	card_set summoned_cards_pt[2]; // pt? a list of summoned cards for each player ?
+	card_set normalsummoned_cards_pt[2]; // pt? a list of normal summoned cards for each player ?
+	card_set spsummoned_cards_pt[2]; // pt? a list of special summoned cards for each player ?
+	card_set flipsummoned_cards_pt[2]; // pt? a list of flip summoned cards for each player ?
+	effect_set_v disfield_effects; // ?
+	effect_set_v extraz_effects; // ?
+	effect_set_v extraz_effects_e; // ?
+	std::set<effect*> reseted_effects; // ? leve the typo or change it everywhere!
+	effect_vector delayed_tp; // ?
+	effect_vector delayed_ntp; // ?
+	event_list delayed_tev; // ?
+	event_list delayed_ntev; // ?
+	std::unordered_map<card*, uint32> readjust_map; // ?
+	std::unordered_set<card*> unique_cards[2]; // a list of unique card on the side for both players ?
+	std::unordered_map<uint32, uint32> effect_count_code; // ?
+	std::unordered_map<uint32, uint32> effect_count_code_duel; // ?
+	std::multimap<int32, card*, std::greater<int32> > xmaterial_lst; // ?
+	ptr temp_var[4]; // ptr?
+	uint32 global_flag; // for exceptions and something else?
+	uint16 pre_field[2]; // ?
+	uint16 opp_mzone[5]; // which of the opponent's monster zone places are occupied
+	int32 chain_limit; // ?
+	uint8 chain_limp; // ?
+	int32 chain_limit_p; // ?
+	uint8 chain_limp_p; // ?
+	uint8 chain_solving; // ?
+	uint8 win_player; // winner ?
+	uint8 win_reason; // winning reason
+	uint8 re_adjust; // ?
+	effect* reason_effect; // ?
+	uint8 reason_player; // ?
+	card* summoning_card; // ?
+	uint8 summon_depth; // ?
+	card* attacker; // current attacker ?
+	card* sub_attacker; // ???
+	card* attack_target; // current attack target ?
+	card* sub_attack_target; // ???
+	card* limit_tuner; // ?
+	group* limit_xyz; // ?
+	group* limit_syn; // ?
+	uint8 attack_cancelable; // a flag if the current attack is cancelable?
+	uint8 effect_damage_step; // ?
+	int32 battle_damage[2]; // battle damage of last/current fight for both players?
+	int32 summon_count[2]; // number of (normal?) summons of both players?
+	uint8 extra_summon[2]; // number of extra summons of both players?
+	int32 spe_effect[2]; // ?
+	int32 duel_options; // ?
+	uint32 copy_reset; // ?
+	uint8 copy_reset_count; // ?
+	uint8 dice_result[5]; // apparently there are never more than 5 dices thrown at a time?
+	uint8 coin_result[5]; // apparently there are never more than 5 coins thrown at a time?
+	uint8 to_bp; // ?
+	uint8 to_m2; // ?
+	uint8 to_ep; // ?
+	uint8 skip_m2; // ?
+	uint8 chain_attack; // ?
+	card* chain_attack_target; // ?
+	uint8 selfdes_disabled; // ?
+	uint8 overdraw[2]; // ?
+	int32 check_level; // ?
+	uint8 shuffle_check_disabled; // ?
+	uint8 shuffle_hand_check[2]; // checks for both players if the hands have been shuffled recently?
+	uint8 shuffle_deck_check[2]; // checks for both players if the decks have been shuffled recently?
+	uint8 deck_reversed; // if the decks are played reversed
+	uint8 remove_brainwashing; // if all brainwashings are removed
+	uint8 flip_delayed; // ?
+	uint8 damage_calculated; // (if?) the damage from the current or last attack (has been?) calculated?
+	uint8 summon_state[2]; // ?
+	uint8 normalsummon_state[2]; // ?
+	uint8 flipsummon_state[2]; // ?
+	uint8 spsummon_state[2]; // ?
+	uint8 attack_state[2]; // ?
+	uint8 phase_action; // ?
+	uint32 hint_timing[2]; // ?
 };
+
+/*
+ * Structure for ?
+ */
 class field {
 public:
-	typedef std::multimap<uint32, effect*> effect_container;
-	typedef std::list<card*> check_list;
+	typedef std::multimap<uint32, effect*> effect_container; // ?
+	typedef std::list<card*> check_list; // a list of cards (for checking, I suppose ?)
 	typedef std::map <effect*, effect_container::iterator> effect_indexer;
-	typedef std::set<card*, card_sort> card_set;
-	typedef std::vector<effect*> effect_vector;
-	typedef std::vector<card*> card_vector;
-	typedef std::vector<uint32> option_vector;
-	typedef std::list<card*> card_list;
-	typedef std::list<tevent> event_list;
-	typedef std::list<chain> chain_list;
-	typedef std::map<effect*, chain> instant_f_list;
-	typedef std::vector<chain> chain_array;
-	typedef std::list<processor_unit> processor_list;
-	typedef std::map<effect*, effect*> oath_effects;
+	typedef std::set<card*, card_sort> card_set; // a list of cards with a comparisator
+	typedef std::vector<effect*> effect_vector; // a list of effects
+	typedef std::vector<card*> card_vector; // a list of cards
+	typedef std::vector<uint32> option_vector; // a list of options ?
+	typedef std::list<card*> card_list; // a list of cards
+	typedef std::list<tevent> event_list; // a list of events
+	typedef std::list<chain> chain_list; // a list of chains
+	typedef std::map<effect*, chain> instant_f_list; // ?
+	typedef std::vector<chain> chain_array; // another kind of list of chains
+	typedef std::list<processor_unit> processor_list; // ?
+	typedef std::map<effect*, effect*> oath_effects; // ?
 
-	duel* pduel;
-	player_info player[2];
-	card* temp_card;
-	field_info infos;
-	lpcost cost[2];
-	field_effect effects;
-	processor core;
-	return_value returns;
-	tevent nil_event;
+	duel* pduel; // the current duel
+	player_info player[2]; // the two players
+	card* temp_card; // ?
+	field_info infos; // ?
+	lpcost cost[2]; // ?
+	field_effect effects; // effects on the game field
+	processor core; // where the good stuff is ?
+	return_value returns; // ??
+	tevent nil_event; // no idea ?
 
-	static int32 field_used_count[32];
-	field(duel* pduel);
-	~field();
-	void reload_field_info();
+	static int32 field_used_count[32]; // ?
+	field(duel* pduel); // the constructor
+	~field(); // the destructor
+	void reload_field_info(); // ?
 	
-	void add_card(uint8 playerid, card* pcard, uint8 location, uint8 sequence);
-	void remove_card(card* pcard);
-	void move_card(uint8 playerid, card* pcard, uint8 location, uint8 sequence);
-	void set_control(card* pcard, uint8 playerid, uint16 reset_phase, uint8 reset_count);
-	card* get_field_card(uint8 playerid, uint8 location, uint8 sequence);
-	int32 is_location_useable(uint8 playerid, uint8 location, uint8 sequence);
-	int32 get_useable_count(uint8 playerid, uint8 location, uint8 uplayer, uint32 reason, uint32* list = 0);
-	void shuffle(uint8 playerid, uint8 location);
-	void reset_sequence(uint8 playerid, uint8 location);
-	void swap_deck_and_grave(uint8 playerid);
-	void reverse_deck(uint8 playerid);
-	void tag_swap(uint8 playerid);
+	void add_card(uint8 playerid, card* pcard, uint8 location, uint8 sequence); // adds a card from nirvana to the field
+	void remove_card(card* pcard); // removes a card from the field to the nirvana
+	void move_card(uint8 playerid, card* pcard, uint8 location, uint8 sequence); // remove + add
+	void set_control(card* pcard, uint8 playerid, uint16 reset_phase, uint8 reset_count); // sets control of a certain card to specified player
+	card* get_field_card(uint8 playerid, uint8 location, uint8 sequence); // returns a specified card on the field
+	int32 is_location_useable(uint8 playerid, uint8 location, uint8 sequence); // returns if specified location is useable
+	int32 get_useable_count(uint8 playerid, uint8 location, uint8 uplayer, uint32 reason, uint32* list = 0); // returns number of useable mzone or szone fields
+	void shuffle(uint8 playerid, uint8 location); // shuffles hand or deck
+	void reset_sequence(uint8 playerid, uint8 location); // enumerates the specified location anew (sequence), except for szone or mzone
+	void swap_deck_and_grave(uint8 playerid); // changes deck and graveyard and shuffles the deck afterwards
+	void reverse_deck(uint8 playerid); // reverses the deck
+	void tag_swap(uint8 playerid); // swaps main deck, extra deck and hand for tag duels
 	
-	void add_effect(effect* peffect, uint8 owner_player = 2);
-	void remove_effect(effect* peffect);
-	void remove_oath_effect(effect* reason_effect);
-	void reset_effect(uint32 id, uint32 reset_type);
-	void reset_phase(uint32 phase);
-	void reset_chain();
-	void add_effect_code(uint32 code, uint32 playerid);
-	uint32 get_effect_code(uint32 code, uint32 playerid);
-	void dec_effect_code(uint32 code, uint32 playerid);
+	void add_effect(effect* peffect, uint8 owner_player = 2); // adds an effect to the game
+	void remove_effect(effect* peffect); // removes an effect from the game
+	void remove_oath_effect(effect* reason_effect); // ?
+	void reset_effect(uint32 id, uint32 reset_type); // ?
+	void reset_phase(uint32 phase); // ?
+	void reset_chain(); // ?
+	void add_effect_code(uint32 code, uint32 playerid); // ?
+	uint32 get_effect_code(uint32 code, uint32 playerid); // ?
+	void dec_effect_code(uint32 code, uint32 playerid); // ?
 	
-	void filter_field_effect(uint32 code, effect_set* eset, uint8 sort = TRUE);
-	void filter_affected_cards(effect* peffect, card_set* cset);
-	void filter_player_effect(uint8 playerid, uint32 code, effect_set* eset, uint8 sort = TRUE);
-	int32 filter_matching_card(int32 findex, uint8 self, uint32 location1, uint32 location2, group* pgroup, card* pexception, uint32 extraargs, card** pret = 0, int32 fcount = 0, int32 is_target = FALSE);
-	int32 filter_field_card(uint8 self, uint32 location, uint32 location2, group* pgroup);
-	effect* is_player_affected_by_effect(uint8 playerid, uint32 code);
+	void filter_field_effect(uint32 code, effect_set* eset, uint8 sort = TRUE); // ?
+	void filter_affected_cards(effect* peffect, card_set* cset); // ?
+	void filter_player_effect(uint8 playerid, uint32 code, effect_set* eset, uint8 sort = TRUE); // ?
+	int32 filter_matching_card(int32 findex, uint8 self, uint32 location1, uint32 location2, group* pgroup, card* pexception, uint32 extraargs, card** pret = 0, int32 fcount = 0, int32 is_target = FALSE); // ?
+	int32 filter_field_card(uint8 self, uint32 location, uint32 location2, group* pgroup); // ?
+	effect* is_player_affected_by_effect(uint8 playerid, uint32 code); // ?
 
-	int32 get_release_list(uint8 playerid, card_set* release_list, card_set* ex_list, int32 use_con, int32 use_hand, int32 fun, int32 exarg, card* exp);
-	int32 check_release_list(uint8 playerid, int32 count, int32 use_con, int32 use_hand, int32 fun, int32 exarg, card* exp);
-	int32 get_summon_release_list(card* target, card_set* release_list, card_set* ex_list, card_set* ex_list_sum);
-	int32 get_summon_count_limit(uint8 playerid);
-	int32 get_draw_count(uint8 playerid);
-	void get_ritual_material(uint8 playerid, effect* peffect, card_set* material);
-	void ritual_release(card_set* material);
-	void get_xyz_material(card* scard, int32 findex, int32 maxc);
-	void get_overlay_group(uint8 self, uint8 s, uint8 o, card_set* pset);
-	int32 get_overlay_count(uint8 self, uint8 s, uint8 o);
-	void update_disable_check_list(effect* peffect);
-	void add_to_disable_check_list(card* pcard);
-	void adjust_disable_check_list();
-	void add_unique_card(card* pcard);
-	void remove_unique_card(card* pcard);
+	int32 get_release_list(uint8 playerid, card_set* release_list, card_set* ex_list, int32 use_con, int32 use_hand, int32 fun, int32 exarg, card* exp); // ?
+	int32 check_release_list(uint8 playerid, int32 count, int32 use_con, int32 use_hand, int32 fun, int32 exarg, card* exp); // ?
+	int32 get_summon_release_list(card* target, card_set* release_list, card_set* ex_list, card_set* ex_list_sum); // ?
+	int32 get_summon_count_limit(uint8 playerid); // returns the number of (normal?) summons currently allowed
+	int32 get_draw_count(uint8 playerid); // ?
+	void get_ritual_material(uint8 playerid, effect* peffect, card_set* material); // saves possible ritual material into material
+	void ritual_release(card_set* material); // (ritual) tributes cards
+	void get_xyz_material(card* scard, int32 findex, int32 maxc); // saves possible xyz material into core.xmaterial_lst
+	void get_overlay_group(uint8 self, uint8 s, uint8 o, card_set* pset); // gets all xyz material on the field and stores it into pset
+	int32 get_overlay_count(uint8 self, uint8 s, uint8 o); // basically len(get_overlay_group(...))
+	void update_disable_check_list(effect* peffect); // ?
+	void add_to_disable_check_list(card* pcard); // ?
+	void adjust_disable_check_list(); // ?
+	void add_unique_card(card* pcard); // adds a unique card to the field/core
+	void remove_unique_card(card* pcard); // removes a unique card from the field/core
 	effect* check_unique_onfield(card* pcard, uint8 controler);
 	
 	int32 check_lp_cost(uint8 playerid, uint32 cost);
@@ -508,6 +553,7 @@ public:
 //Location Use Reason
 #define LOCATION_REASON_TOFIELD	0x1
 #define LOCATION_REASON_CONTROL	0x2
+
 //Chain Info
 #define CHAIN_DISABLE_ACTIVATE	0x01
 #define CHAIN_DISABLE_EFFECT	0x02
@@ -526,6 +572,7 @@ public:
 #define CHAININFO_CHAIN_ID				0x800
 #define CHAININFO_TYPE					0x1000
 #define CHAININFO_EXTTYPE				0x2000
+
 //Timing
 #define TIMING_DRAW_PHASE			0x1
 #define TIMING_STANDBY_PHASE		0x2
@@ -692,6 +739,7 @@ public:
 #define CHINT_NUMBER			5
 #define CHINT_DESC_ADD			6
 #define CHINT_DESC_REMOVE		7
+
 //Messages
 #define MSG_RETRY				1
 #define MSG_HINT				2

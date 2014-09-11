@@ -9,6 +9,9 @@
 #include "card.h"
 #include "duel.h"
 
+/*
+ * Constructor
+ */
 group::group() {
 	scrtype = 2;
 	ref_handle = 0;
@@ -16,6 +19,10 @@ group::group() {
 	is_readonly = FALSE;
 	it = container.begin();
 }
+
+/*
+ * Destructor
+ */
 group::~group() {
 
 }

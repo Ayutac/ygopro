@@ -1,5 +1,5 @@
 /*
- * interface.cpp
+ * ocgapi.cpp
  *
  *  Created on: 2010-5-2
  *      Author: Argon

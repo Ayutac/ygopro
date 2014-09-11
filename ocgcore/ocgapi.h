@@ -1,5 +1,5 @@
 /*
- * interface.h
+ * ocgapi.h
  *
  *  Created on: 2010-4-28
  *      Author: Argon

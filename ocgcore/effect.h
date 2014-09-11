@@ -1,5 +1,7 @@
 /*
  * effect.h
+ * Contains the necessary structures to simulate card effects,
+ * and constant related to card effects.
  *
  *  Created on: 2010-3-13
  *      Author: Argon
@@ -27,37 +29,37 @@ struct effect_set_v;
 
 class effect {
 public:
-	int32 scrtype;
-	int32 ref_handle;
-	duel* pduel;
-	card* owner;
-	card* handler;
-	uint8 effect_owner;
-	uint32 description;
-	uint32 code;
-	uint32 flag;
-	uint32 id;
-	uint16 type;
-	uint16 copy_id;
-	uint16 range;
-	uint16 s_range;
-	uint16 o_range;
-	uint16 reset_count;
-	uint32 reset_flag;
-	uint32 count_code;
-	uint32 category;
-	uint32 label;
-	uint32 hint_timing[2];
-	uint32 card_type;
-	uint32 active_type;
-	uint16 field_ref;
-	uint16 status;
-	void* label_object;
-	int32 condition;
-	int32 cost;
-	int32 target;
-	int32 value;
-	int32 operation;
+	int32 scrtype; // ?
+	int32 ref_handle; // ?
+	duel* pduel; // the duel this card is in ?
+	card* owner; // the card the effect comes from ?
+	card* handler; // the card that executes the effect ?
+	uint8 effect_owner; // ?
+	uint32 description; // A description but with uint32 what ?
+	uint32 code; // What this effect does, see EFFECT_constants below ? 
+	uint32 flag; // I guess one (or a combination) of the EFFECT_FLAG_constants below ?
+	uint32 id; // ? 
+	uint16 type; // I guess one (or a combination) of the EFFECT_TYPE_constants below ? But there are also card_type and activate_type ... 
+	uint16 copy_id; // ?
+	uint16 range; // where handler has to be to have the effect come to place ? See LOCATION_constants in card.h
+	uint16 s_range; // ?
+	uint16 o_range; // ?
+	uint16 reset_count; // When the effect count resets. See RESET_constants below.
+	uint32 reset_flag; // see RESET_constants ?
+	uint32 count_code; // counts how often the effect was used ?
+	uint32 category; // ?
+	uint32 label; // ?
+	uint32 hint_timing[2]; // ?
+	uint32 card_type; // maybe a TYPE_constant from card.h ?
+	uint32 active_type; // maybe one of the EFFECT_TYPE_constants below ?
+	uint16 field_ref; // ?
+	uint16 status; // maybe one of the 3 status constants below or one from STATUS_effects in card.h ?
+	void* label_object; // ?
+	int32 condition; // condition for the effect to work ?
+	int32 cost; // ?
+	int32 target; // ?
+	int32 value; // ?
+	int32 operation; // ?
 
 	effect();
 	~effect();
@@ -170,6 +172,7 @@ public:
 #define EFFECT_FLAG_NAGA			0x10000000	//
 #define EFFECT_FLAG_COF				0x20000000	//
 #define EFFECT_FLAG_CVAL_CHECK		0x40000000	//
+
 //========== Codes ==========
 #define EFFECT_IMMUNE_EFFECT			1	//
 #define EFFECT_DISABLE					2	//

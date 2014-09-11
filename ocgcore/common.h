@@ -1,6 +1,8 @@
 /*
  * common.h
- *
+ * Contains general typedefs which are used through all files,
+ * serveral binary (?) operators and cart_sort
+ * 
  *  Created on: 2009-1-7
  *      Author: Argon.Sun
  */
@@ -38,6 +40,10 @@ typedef int BOOL;
 #ifndef NULL
 #define NULL 0
 #endif
+
+/*
+ * A structure that contains an operation to compare two cards.
+ */
 struct card_sort {
 	bool operator()(void* const & c1, void* const & c2) const;
 };
